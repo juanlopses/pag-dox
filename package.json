@@ -1,17 +1,14 @@
 {
-  "name": "reniec-consulta",
-  "version": "1.2.0",
-  "description": "A cyberpunk-themed webpage to query RENIEC API with extensive animations, sound, and PDF/JSON download",
-  "main": "index.html",
+  "name": "reniec-api",
+  "version": "1.0.0",
+  "description": "A basic Node.js server and webpage to query RENIEC API",
+  "main": "server.js",
   "scripts": {
-    "start": "npx serve"
+    "start": "node server.js"
   },
   "dependencies": {
-    "gsap": "*",
-    "jspdf": "*"
-  },
-  "devDependencies": {
-    "serve": "*"
+    "express": "*",
+    "axios": "*"
   },
   "author": "",
   "license": "ISC"
