@@ -3,97 +3,120 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Consulta RENIEC Cyberpunk</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <title>Consulta RENIEC</title>
   <style>
     body {
-      background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%);
-      font-family: 'Orbitron', sans-serif;
-      overflow: hidden;
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #f4f4f4;
     }
-    .container {
-      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-      border: 1px solid rgba(0, 255, 255, 0.2);
+    h1 {
+      text-align: center;
+      color: #333;
     }
-    .particle {
-      position: absolute;
-      width: 2px;
-      height: 2px;
-      background: rgba(0, 255, 255, 0.7);
+    .form-group {
+      margin-bottom: 15px;
+    }
+    input, button {
+      padding: 10px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #result {
+      margin-top: 20px;
+      display: none;
+    }
+    #photo {
+      max-width: 150px;
       border-radius: 50%;
-      pointer-events: none;
+      display: block;
+      margin: 0 auto 15px;
     }
-    #searchBtn:hover, #downloadJsonBtn:hover, #downloadPdfBtn:hover {
-      box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
-    }
-    input:focus {
-      box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+    .error {
+      color: red;
+      text-align: center;
     }
   </style>
 </head>
-<body class="min-h-screen flex items-center justify-center text-white">
-  <!-- Loading Overlay -->
-  <div id="loading" class="fixed inset-0 bg-gray-900/90 flex items-center justify-center z-50 hidden">
-    <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-400"></div>
-    <p class="mt-4 text-blue-400 animate-pulse">Cargando datos...</p>
+<body>
+  <h1>Consulta RENIEC</h1>
+  <div class="form-group">
+    <input type="text" id="dniInput" placeholder="Ingrese DNI (8 dígitos)" maxlength="8">
   </div>
-
-  <!-- Main Container -->
-  <div class="container max-w-md w-full bg-gray-900/80 p-8 rounded-xl transform transition-all duration-500">
-    <h1 class="text-4xl font-bold text-center mb-6 text-blue-400 neon-glow">Consulta RENIEC</h1>
-    
-    <!-- Input Form -->
-    <div class="mb-6">
-      <input 
-        id="dniInput" 
-        type="text" 
-        placeholder="Ingrese DNI" 
-        class="w-full p-3 bg-gray-800/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all duration-300"
-        maxlength="8"
-      >
-    </div>
-    <button 
-      id="searchBtn" 
-      class="w-full p-3 bg-blue-600 rounded-lg text-white font-semibold transition-all duration-300 transform hover:scale-105"
-    >
-      Consultar
-    </button>
-
-    <!-- Result Container -->
-    <div id="result" class="mt-6 hidden">
-      <div class="flex justify-center mb-6">
-        <img id="photo" class="w-36 h-36 rounded-full border-4 border-pink-500 object-cover transform transition-all duration-500" alt="Foto">
-      </div>
-      <div class="space-y-3 text-sm">
-        <p class="result-item"><span class="font-semibold text-blue-400">DNI:</span> <span id="dni"></span></p>
-        <p class="result-item"><span class="font-semibold text-blue-400">Nombre Completo:</span> <span id="nombreCompleto"></span></p>
-        <p class="result-item"><span class="font-semibold text-blue-400">Nombre:</span> <span id="nombre"></span></p>
-        <p class="result-item"><span class="font-semibold text-blue-400">Apellido Paterno:</span> <span id="apellidoP"></span></p>
-        <p class="result-item"><span class="font-semibold text-blue-400">Apellido Materno:</span> <span id="apellidoM"></span></p>
-        <p class="result-item"><span class="font-semibold text-blue-400">Fecha de Nacimiento:</span> <span id="fechaNacimiento"></span></p>
-        <p class="result-item"><span class="font-semibold text-blue-400">Dirección:</span> <span id="direccion"></span></p>
-        <p class="result-item"><span class="font-semibold text-blue-400">Ubigeo:</span> <span id="ubigeo"></span></p>
-      </div>
-      <div class="mt-6 flex space-x-4">
-        <button 
-          id="downloadJsonBtn" 
-          class="flex-1 p-3 bg-pink-600 rounded-lg text-white font-semibold transition-all duration-300 transform hover:scale-105"
-        >
-          Descargar JSON
-        </button>
-        <button 
-          id="downloadPdfBtn" 
-          class="flex-1 p-3 bg-green-600 rounded-lg text-white font-semibold transition-all duration-300 transform hover:scale-105"
-        >
-          Descargar PDF
-        </button>
-      </div>
-    </div>
+  <button onclick="fetchData()">Consultar</button>
+  <div id="result">
+    <img id="photo" alt="Foto">
+    <p><strong>DNI:</strong> <span id="dni"></span></p>
+    <p><strong>Nombre Completo:</strong> <span id="nombreCompleto"></span></p>
+    <p><strong>Nombre:</strong> <span id="nombre"></span></p>
+    <p><strong>Apellido Paterno:</strong> <span id="apellidoP"></span></p>
+    <p><strong>Apellido Materno:</strong> <span id="apellidoM"></span></p>
+    <p><strong>Fecha de Nacimiento:</strong> <span id="fechaNacimiento"></span></p>
+    <p><strong>Dirección:</strong> <span id="direccion"></span></p>
+    <p><strong>Ubigeo:</strong> <span id="ubigeo"></span></p>
   </div>
+  <p id="error" class="error"></p>
 
-  <script src="script.js"></script>
+  <script>
+    async function fetchData() {
+      const dni = document.getElementById('dniInput').value;
+      const errorEl = document.getElementById('error');
+      const resultEl = document.getElementById('result');
+      errorEl.textContent = '';
+
+      if (!/^\d{8}$/.test(dni)) {
+        errorEl.textContent = 'Por favor, ingrese un DNI válido de 8 dígitos.';
+        resultEl.style.display = 'none';
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/reniec?dni=${dni}`);
+        const data = await response.json();
+
+        if (data.error) {
+          errorEl.textContent = data.error;
+          resultEl.style.display = 'none';
+          return;
+        }
+
+        if (data.estado && data.datos) {
+          document.getElementById('photo').src = `data:image/jpeg;base64,${data.datos.foto}`;
+          document.getElementById('dni').textContent = data.datos.dni;
+          document.getElementById('nombreCompleto').textContent = data.datos.nombreCompleto;
+          document.getElementById('nombre').textContent = data.datos.nombre;
+          document.getElementById('apellidoP').textContent = data.datos.apellidoP;
+          document.getElementById('apellidoM').textContent = data.datos.apellidoM;
+          document.getElementById('fechaNacimiento').textContent = data.datos.fechaDeNacimiento;
+          document.getElementById('direccion').textContent = data.datos.direccion;
+          document.getElementById('ubigeo').textContent = data.datos.ubigeoReniec;
+          resultEl.style.display = 'block';
+        } else {
+          errorEl.textContent = 'No se encontraron datos para el DNI ingresado.';
+          resultEl.style.display = 'none';
+        }
+      } catch (error) {
+        errorEl.textContent = 'Error al consultar la API.';
+        resultEl.style.display = 'none';
+      }
+    }
+
+    document.getElementById('dniInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        fetchData();
+      }
+    });
+  </script>
 </body>
 </html>
