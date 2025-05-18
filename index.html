@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consulta RENIEC Cyberpunk</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%);
+      font-family: 'Orbitron', sans-serif;
+      overflow: hidden;
+    }
+    .container {
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+    }
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: rgba(0, 255, 255, 0.7);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    #searchBtn:hover, #downloadJsonBtn:hover, #downloadPdfBtn:hover {
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+    }
+    input:focus {
+      box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center text-white">
+  <!-- Loading Overlay -->
+  <div id="loading" class="fixed inset-0 bg-gray-900/90 flex items-center justify-center z-50 hidden">
+    <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-400"></div>
+    <p class="mt-4 text-blue-400 animate-pulse">Cargando datos...</p>
+  </div>
+
+  <!-- Main Container -->
+  <div class="container max-w-md w-full bg-gray-900/80 p-8 rounded-xl transform transition-all duration-500">
+    <h1 class="text-4xl font-bold text-center mb-6 text-blue-400 neon-glow">Consulta RENIEC</h1>
+    
+    <!-- Input Form -->
+    <div class="mb-6">
+      <input 
+        id="dniInput" 
+        type="text" 
+        placeholder="Ingrese DNI" 
+        class="w-full p-3 bg-gray-800/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all duration-300"
+        maxlength="8"
+      >
+    </div>
+    <button 
+      id="searchBtn" 
+      class="w-full p-3 bg-blue-600 rounded-lg text-white font-semibold transition-all duration-300 transform hover:scale-105"
+    >
+      Consultar
+    </button>
+
+    <!-- Result Container -->
+    <div id="result" class="mt-6 hidden">
+      <div class="flex justify-center mb-6">
+        <img id="photo" class="w-36 h-36 rounded-full border-4 border-pink-500 object-cover transform transition-all duration-500" alt="Foto">
+      </div>
+      <div class="space-y-3 text-sm">
+        <p class="result-item"><span class="font-semibold text-blue-400">DNI:</span> <span id="dni"></span></p>
+        <p class="result-item"><span class="font-semibold text-blue-400">Nombre Completo:</span> <span id="nombreCompleto"></span></p>
+        <p class="result-item"><span class="font-semibold text-blue-400">Nombre:</span> <span id="nombre"></span></p>
+        <p class="result-item"><span class="font-semibold text-blue-400">Apellido Paterno:</span> <span id="apellidoP"></span></p>
+        <p class="result-item"><span class="font-semibold text-blue-400">Apellido Materno:</span> <span id="apellidoM"></span></p>
+        <p class="result-item"><span class="font-semibold text-blue-400">Fecha de Nacimiento:</span> <span id="fechaNacimiento"></span></p>
+        <p class="result-item"><span class="font-semibold text-blue-400">Dirección:</span> <span id="direccion"></span></p>
+        <p class="result-item"><span class="font-semibold text-blue-400">Ubigeo:</span> <span id="ubigeo"></span></p>
+      </div>
+      <div class="mt-6 flex space-x-4">
+        <button 
+          id="downloadJsonBtn" 
+          class="flex-1 p-3 bg-pink-600 rounded-lg text-white font-semibold transition-all duration-300 transform hover:scale-105"
+        >
+          Descargar JSON
+        </button>
+        <button 
+          id="downloadPdfBtn" 
+          class="flex-1 p-3 bg-green-600 rounded-lg text-white font-semibold transition-all duration-300 transform hover:scale-105"
+        >
+          Descargar PDF
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
